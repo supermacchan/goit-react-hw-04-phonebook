@@ -1,41 +1,44 @@
-import { Component } from "react";
+import { useState } from "react";
 import PropTypes from 'prop-types';
 import css from './ContactForm.module.css';
 
-export class ContactForm extends Component {
-    static propTypes = {
-        onSubmit: PropTypes.func.isRequired,
+export const ContactForm = ({ onSubmit }) => {
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
+
+    const handleInputChange = event => {
+        const { name, value } = event.currentTarget;
+        switch (name) {
+            case 'name':
+                setName(value);
+                break;
+            case 'number':
+                setNumber(value);
+                break;
+            default:
+                return;
+        };
     };
 
-    state = {
-        name: '',
-        number: '',
-    };
-
-    hadleInputChange = event => {
-        this.setState({
-        [event.currentTarget.name]: event.currentTarget.value,
-        })
-    }
-
-    handleFormSubmit = event => {
+    const handleFormSubmit = event => {
         event.preventDefault();
-        this.props.onSubmit(this.state);
-        this.reset();
+        const newContact = {
+            name,
+            number,
+        }
+        onSubmit(newContact);
+        reset();
     }
 
-    reset = () => {
-        this.setState({
-        name: '',
-        number: '',
-        });
-    }
+    const reset = () => {
+        setName('');
+        setNumber('');
+    };
 
-    render() {
         return (
             <form
                 className={css.phonebook__form}
-                onSubmit={this.handleFormSubmit}
+                onSubmit={handleFormSubmit}
             >
                 <label
                     htmlFor="nameInputId"
@@ -50,9 +53,9 @@ export class ContactForm extends Component {
                     title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                     id="nameInputId"
                     required
-                    onChange={this.hadleInputChange}
+                    onChange={handleInputChange}
                     className={css.phonebook__input}
-                    value={this.state.name}
+                    value={name}
                 />
                 <label
                     htmlFor="telInputId"
@@ -67,9 +70,9 @@ export class ContactForm extends Component {
                     title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                     id="telInputId"
                     required
-                    onChange={this.hadleInputChange}
+                    onChange={handleInputChange}
                     className={css.phonebook__input}
-                    value={this.state.number}
+                    value={number}
                 />
                 <button
                     type="submit"
@@ -80,4 +83,8 @@ export class ContactForm extends Component {
             </form>
         )
     };
-}
+
+
+ContactForm.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+};
